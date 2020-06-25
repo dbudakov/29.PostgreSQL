@@ -1,0 +1,1 @@
+{"rsync":{"/vagrant":{"type":"rsync","guestpath":"/vagrant","hostpath":"/home/dbudakov/otus/29.PostgreSQL/homework","disabled":false,"__vagrantfile":true,"owner":"vagrant","group":"vagrant"}}}
