@@ -1,14 +1,27 @@
-- name:
+- name: Install repo PostgreSQL
   yum:
-    name: "{{ item }}"
+    name: https://download.postgresql.org/pub/repos/yum/reporpms/EL-7-x86_64/pgdg-redhat-repo-latest.noarch.rpm
     state: present
-  loop:
-    - epel-release
 
-- name: install pgsql
+- name: Install PostgreSQL
+  yum:
+    name: postgresql11-server
+    state: present
+
+- name: Initializing database
   shell: |
-    yum install -y https://download.postgresql.org/pub/repos/yum/reporpms/EL-7-x86_64/pgdg-redhat-repo-latest.noarch.rpm
-    yum install postgresql11-server -y
     /usr/pgsql-11/bin/postgresql-11-setup initdb
-    systemctl enable postgresql-11
-    systemctl start postgresql-11
+
+- name:
+  systemd:
+    name: postgresql-11
+    enabled: yes
+    state: started
+
+#- name:
+#  firewalld:
+
+#firewall-cmd --get-active-zones
+#firewall-cmd --zone=public --add-port=5432/tcp --permanent
+#firewall-cmd --reload
+#setsebool -P httpd_can_network_connect_db 1
