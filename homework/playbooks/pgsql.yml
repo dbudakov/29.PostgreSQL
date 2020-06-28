@@ -1,12 +1,13 @@
 - name: "deploy postgresql homework"
   hosts:
     - pg
+    - hot-standby
   gather_facts: false
   become: true
   roles:
     - role: roles
   tasks:
-    - include: ../roles/tasks/all.yml
-#    - include: ../roles/tasks/{{ inventory_hostname }}.yml
+    #    - include: ../roles/tasks/all.yml
+    - include: ../roles/tasks/{{ inventory_hostname }}.yml
 #  handlers:
 #    - include: ../roles/handlers/*.yml

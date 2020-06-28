@@ -1,2 +1,17 @@
 https://winitpro.ru/index.php/2019/09/26/ustanovka-postgresql-db-centos/
 https://habr.com/ru/post/188096/ - репликация
+
+Создание и откат снапшота
+    vagrant snapshot push
+    vagrant snapshot pop --no-delete
+
+ps aux | grep postgres | grep -- -D
+sed -i 's!#listen_addresses!listen_addresses!' /var/lib/pgsql/11/data/postgresql.conf
+sed -i '/listen/s!localhost!\*!' /var/lib/pgsql/11/data/postgresql.conf
+echo "host all all 192.168.100.0/24 trust" >> /var/lib/pgsql/11/data/pg_hba.conf
+
+Коннект к pgsql:
+    psql -h 192.168.100.101 -U postgres
+
+Копирование ключа
+    sshpass -p "postgres" scp /home/postgres/.ssh/id_rsa.pub postgres@192.168.100.102:/home/postgres/.ssh/authorized_keys

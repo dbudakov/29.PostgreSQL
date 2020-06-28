@@ -1,0 +1,81 @@
+- name: Adding users
+  user:
+    name: postgres
+    state: present
+    password: "$1$QRAcN6FI$JG.0ytvzhHP0w.dBlh6Ol0"
+    createhome: yes
+    generate_ssh_key: yes
+    ssh_key_bits: 2048
+
+- name: Install repo PostgreSQL
+  yum:
+    name: https://download.postgresql.org/pub/repos/yum/reporpms/EL-7-x86_64/pgdg-redhat-repo-latest.noarch.rpm
+    state: present
+
+- name: Install PostgreSQL
+  yum:
+    name: "{{ item }}"
+    state: present
+  loop:
+    - postgresql11-server
+    - sshpass
+
+- name: Disable check known_hosts
+  shell: echo StrictHostKeyChecking=no >> /etc/ssh/ssh_config
+
+#- name: Enable ssh PasswordAuthentication
+#  replace:
+#    path: /etc/ssh/sshd_config
+#    regexp: "#PasswordAuthentication yes"
+#    replace: "PasswordAuthentication yes"
+
+- name:
+  systemd:
+    name: sshd
+    state: restarted
+
+- name: Copy pg:id_rsa in hot-standby:authorized_keys
+  template:
+    src: ../roles/templates/keys/pg/home/postgres/.ssh/id_rsa.pub
+    dest: /home/postgres/.ssh/authorized_keys
+
+- name:
+  shell: |
+    chmod 700 /home/postgres/.ssh
+    chown postgres:postgres /home/postgres/.ssh/authorized_keys
+    chmod 600 /home/postgres/.ssh/authorized_keys
+    sshpass -p "postgres" scp /home/postgres/.ssh/id_rsa.pub postgres@192.168.100.101:/home/postgres/.ssh/authorized_keys
+
+- name: Create data for standby
+  shell: |
+    sshpass -p "postgres" ssh postgres@192.168.100.101 "psql -c \"SELECT pg_start_backup('stream');"\"
+    sshpass -p "postgres" ssh postgres@192.168.100.101 "rsync -a /var/lib/pgsql/11/data/ 192.168.100.102:/var/lib/pgsql/11/data/ --exclude postmaster.pid"
+    sshpass -p "postgres" ssh postgres@192.168.100.101 "psql -c \"SELECT pg_stop_backup();"\"
+
+- name: hot_standby on
+  replace:
+    path: /var/lib/pgsql/11/data/postgresql.conf
+    regexp: "#hot_standby = on"
+    replace: "hot_standby = on"
+
+- name: Change file ownership, group and permissions
+  file:
+    path: /var/lib/pgsql/11/data/recovery.conf
+    owner: postgres
+    group: postgres
+    mode: "0644"
+    state: touch
+
+- name: set recovery.conf
+  blockinfile:
+    path: /var/lib/pgsql/11/data/recovery.conf
+    block: |
+      standby_mode = 'on'
+      primary_conninfo = 'host=192.168.100.101 port=5432 user=postgres'
+      trigger_file = 'failover'
+
+#- name: Started pgsql
+#  systemd:
+#    name: postgresql-11
+#    enabled: yes
+#    state: started
