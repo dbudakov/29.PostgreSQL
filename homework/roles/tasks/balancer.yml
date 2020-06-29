@@ -1,0 +1,45 @@
+- name: Adding users
+  user:
+    name: postgres
+    state: present
+    password: "$1$QRAcN6FI$JG.0ytvzhHP0w.dBlh6Ol0"
+    createhome: yes
+    generate_ssh_key: yes
+    ssh_key_bits: 2048
+
+- name: Create authorized_keys
+  file:
+    path: /home/postgres/.ssh/authorized_keys
+    owner: postgres
+    group: postgres
+    mode: '0600'
+    state: touch
+
+- name: Create dir for keys
+  file:
+    path: /vagrant/keys
+    state: directory
+
+
+
+- name: Copy pg:id_rsa in hot-standby:authorized_keys
+  template:
+    src: ../roles/templates/keys/{{ item }}/home/postgres/.ssh/id_rsa.pub
+    dest: /vagrant/keys/{{ item }}-id_rsa.pub
+  loop:
+    - pg
+    - hot-standby
+
+- name: Assemble from fragments from a directory
+  assemble:
+    src: /vagrant/keys/
+    dest: /home/postgres/.ssh/authorized_keys
+  loop:
+    - pg
+    - hot-standby
+
+
+#- name: Copy pg:id_rsa in hot-standby:authorized_keys
+#  template:
+#    src: ../roles/templates/keys/pg/home/postgres/.ssh/id_rsa.pub
+#    dest: /home/postgres/.ssh/authorized_keys

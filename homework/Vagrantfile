@@ -11,6 +11,10 @@ MACHINES = {
       :box_name => "centos/7",
       :ip_addr => '192.168.100.102',
   },
+  :'balancer' => {
+      :box_name => "centos/7",
+      :ip_addr => '192.168.100.103',
+  },
   :'barmen' => {
       :box_name => "centos/7",
       :ip_addr => '192.168.100.103',
@@ -33,8 +37,6 @@ Vagrant.configure("2") do |config|
           vb.name = boxname.to_s
           end
           box.vm.provision "ansible" do |ansible|
-            #ansible.verbose = "vv"
-            #ansible.playbook = "provision/playbook.yml"
             ansible.playbook = "playbooks/pgsql.yml"
             ansible.become = "true"
           end

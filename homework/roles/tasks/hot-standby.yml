@@ -7,6 +7,11 @@
     generate_ssh_key: yes
     ssh_key_bits: 2048
 
+- name: Get file id_rsa.pub
+  fetch:
+    src: /home/postgres/.ssh/id_rsa.pub
+    dest: ../roles/templates/keys
+
 - name: Install repo PostgreSQL
   yum:
     name: https://download.postgresql.org/pub/repos/yum/reporpms/EL-7-x86_64/pgdg-redhat-repo-latest.noarch.rpm
@@ -23,11 +28,11 @@
 - name: Disable check known_hosts
   shell: echo StrictHostKeyChecking=no >> /etc/ssh/ssh_config
 
-#- name: Enable ssh PasswordAuthentication
-#  replace:
-#    path: /etc/ssh/sshd_config
-#    regexp: "#PasswordAuthentication yes"
-#    replace: "PasswordAuthentication yes"
+- name: Enable ssh PasswordAuthentication
+  replace:
+    path: /etc/ssh/sshd_config
+    regexp: "#PasswordAuthentication yes"
+    replace: "PasswordAuthentication yes"
 
 - name:
   systemd:
@@ -74,8 +79,8 @@
       primary_conninfo = 'host=192.168.100.101 port=5432 user=postgres'
       trigger_file = 'failover'
 
-#- name: Started pgsql
-#  systemd:
-#    name: postgresql-11
-#    enabled: yes
-#    state: started
+- name: Started pgsql
+  systemd:
+    name: postgresql-11
+    enabled: yes
+    state: started

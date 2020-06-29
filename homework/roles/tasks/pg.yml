@@ -14,7 +14,7 @@
     chmod 600 /home/postgres/.ssh/id_rsa.pub
 #    chmod 600 /home/postgres/.ssh/known_hosts
 
-- name: Get file from remote
+- name: Get file id_rsa.pub
   fetch:
     src: /home/postgres/.ssh/id_rsa.pub
     dest: ../roles/templates/keys

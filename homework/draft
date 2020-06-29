@@ -15,3 +15,7 @@ echo "host all all 192.168.100.0/24 trust" >> /var/lib/pgsql/11/data/pg_hba.conf
 
 Копирование ключа
     sshpass -p "postgres" scp /home/postgres/.ssh/id_rsa.pub postgres@192.168.100.102:/home/postgres/.ssh/authorized_keys
+
+Проверка запуска pgsql после настройки реплики
+    ps aux | grep sender - ведущий(master)
+    ps aux | grep receiver - ведомый(slave)

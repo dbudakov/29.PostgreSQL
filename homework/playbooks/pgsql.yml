@@ -2,6 +2,7 @@
   hosts:
     - pg
     - hot-standby
+    - balancer
   gather_facts: false
   become: true
   roles:
