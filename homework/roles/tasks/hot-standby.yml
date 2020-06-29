@@ -19,11 +19,8 @@
 
 - name: Install PostgreSQL
   yum:
-    name: "{{ item }}"
+    name: "{{ packages }}"
     state: present
-  loop:
-    - postgresql11-server
-    - sshpass
 
 - name: Disable check known_hosts
   shell: echo StrictHostKeyChecking=no >> /etc/ssh/ssh_config

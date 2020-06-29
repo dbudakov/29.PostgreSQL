@@ -40,7 +40,7 @@
 
 - name: Install PostgreSQL
   yum:
-    name: postgresql11-server
+    name: "{{ packages }}"
     state: present
 
 - name: Initializing database

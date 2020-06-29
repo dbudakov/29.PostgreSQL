@@ -19,3 +19,7 @@ echo "host all all 192.168.100.0/24 trust" >> /var/lib/pgsql/11/data/pg_hba.conf
 Проверка запуска pgsql после настройки реплики
     ps aux | grep sender - ведущий(master)
     ps aux | grep receiver - ведомый(slave)
+
+
+vpn использование include vars
+network использование handlers

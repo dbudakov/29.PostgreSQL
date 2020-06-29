@@ -1,3 +1,7 @@
+- name: include vars
+  include_vars:
+    file: ../roles/vars/packages.yml
+
 - name: Adding users
   user:
     name: postgres
@@ -20,8 +24,6 @@
     path: /vagrant/keys
     state: directory
 
-
-
 - name: Copy pg:id_rsa in hot-standby:authorized_keys
   template:
     src: ../roles/templates/keys/{{ item }}/home/postgres/.ssh/id_rsa.pub
@@ -34,12 +36,24 @@
   assemble:
     src: /vagrant/keys/
     dest: /home/postgres/.ssh/authorized_keys
-  loop:
-    - pg
-    - hot-standby
 
+- name: Install repo PostgreSQL
+  yum:
+    name: https://download.postgresql.org/pub/repos/yum/reporpms/EL-7-x86_64/pgdg-redhat-repo-latest.noarch.rpm
+    state: present
 
-#- name: Copy pg:id_rsa in hot-standby:authorized_keys
-#  template:
-#    src: ../roles/templates/keys/pg/home/postgres/.ssh/id_rsa.pub
-#    dest: /home/postgres/.ssh/authorized_keys
+- name: Install PostgreSQL
+  yum:
+    name: "{{ packages }}"
+    state: present
+
+- name: Disable check known_hosts
+  shell: echo StrictHostKeyChecking=no >> /etc/ssh/ssh_config
+  notify: restart sshd
+
+- name: Add ssh-key an pg, hot-standby
+  shell: |
+    sshpass -p "vagrant" scp /home/postgres/.ssh/id_rsa.pub root@192.168.100.101:/vagrant/balancer-id_rsa.pub
+    sshpass -p "vagrant" ssh root@192.168.100.101 'cat /vagrant/balancer-id_rsa.pub >> /home/postgres/.ssh/authorized_keys'
+    sshpass -p "vagrant" scp /home/postgres/.ssh/id_rsa.pub root@192.168.100.102:/vagrant/balancer-id_rsa.pub
+    sshpass -p "vagrant" ssh root@192.168.100.102 'cat /vagrant/balancer-id_rsa.pub >> /home/postgres/.ssh/authorized_keys'
