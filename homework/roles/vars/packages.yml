@@ -1,4 +1,4 @@
 packages:
   - postgresql11-server
   - sshpass
-  - pgpool-II-10.x86_64
+  - pgpool-II-11.x86_64

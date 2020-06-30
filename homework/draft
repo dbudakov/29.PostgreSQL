@@ -2,8 +2,9 @@ https://winitpro.ru/index.php/2019/09/26/ustanovka-postgresql-db-centos/
 https://habr.com/ru/post/188096/ - репликация
 
 Создание и откат снапшота
-    vagrant snapshot push
-    vagrant snapshot pop --no-delete
+    for i in pg hot-standby balancer; do vagrant up $i;done
+    echo -n "write vm for snapshot:";read a; vagrant snapshot push $a
+    echo -n "write vm for recovery:";read a; vagrant snapshot pop $a --no-delete
 
 ps aux | grep postgres | grep -- -D
 sed -i 's!#listen_addresses!listen_addresses!' /var/lib/pgsql/11/data/postgresql.conf

@@ -1,3 +1,7 @@
+- name: include vars
+  include_vars:
+    file: ../roles/vars/packages.yml
+
 - name: Adding users
   user:
     name: postgres
