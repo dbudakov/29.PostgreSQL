@@ -1,6 +1,6 @@
 - name: include vars
   include_vars:
-    file: ../roles/vars/packages.yml
+    file: ../roles/vars/all_vars.yml
 
 - name: Adding users
   user:
@@ -16,7 +16,7 @@
     path: /home/postgres/.ssh/authorized_keys
     owner: postgres
     group: postgres
-    mode: '0600'
+    mode: "0600"
     state: touch
 
 - name: Create dir for keys
@@ -57,3 +57,41 @@
     sshpass -p "vagrant" ssh root@192.168.100.101 'cat /vagrant/balancer-id_rsa.pub >> /home/postgres/.ssh/authorized_keys'
     sshpass -p "vagrant" scp /home/postgres/.ssh/id_rsa.pub root@192.168.100.102:/vagrant/balancer-id_rsa.pub
     sshpass -p "vagrant" ssh root@192.168.100.102 'cat /vagrant/balancer-id_rsa.pub >> /home/postgres/.ssh/authorized_keys'
+
+- name: Copy pgpool.conf
+  template:
+    src: ../../roles/templates/balancer/pgpool.conf
+    dest: /etc/pgpool-II-11/pgpool.conf
+
+- name: Copy pool_hba.conf
+  template:
+    src: ../../roles/templates/balancer/pool_hba.conf
+    dest: /etc/pgpool-II-11/pool_hba.conf
+
+- name: Copy pool_hba.conf
+  template:
+    src: ../../roles/templates/balancer/failover.sh
+    dest: /etc/pgpool-II-11/failover.sh
+    mode: "0755"
+
+- name: firs start pgpool
+  shell: |
+    /usr/pgpool-11/bin/pgpool -f /etc/pgpool-II-11/pgpool.conf $OPTS
+    kill kill $(pgrep pgpool|head -1)
+  notify: start_pgpool
+
+- name: Create /usr/lib64/pgsql
+  file:
+    path: /usr/lib64/pgsql
+    state: directory
+    mode: 0755
+
+- name: Copy pgpool-walrecrunning.so
+  template:
+    src: ../../roles/templates/all/pgpool-walrecrunning.so
+    dest: /usr/lib64/pgsql/pgpool-walrecrunning.so
+
+- name: Copy pgpool-walrecrunning.sql
+  template:
+    src: ../../roles/templates/all/pgpool-walrecrunning.sql
+    dest: /usr/share/pgsql/pgpool-walrecrunning.sql

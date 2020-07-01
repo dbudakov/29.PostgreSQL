@@ -3,8 +3,8 @@ https://habr.com/ru/post/188096/ - репликация
 
 Создание и откат снапшота
     for i in pg hot-standby balancer; do vagrant up $i;done
-    echo -n "write vm for snapshot:";read a; vagrant snapshot push $a
-    echo -n "write vm for recovery:";read a; vagrant snapshot pop $a --no-delete
+    echo -n "write vm for snapshot: ";read a; vagrant snapshot push $a
+    echo -n "write vm for recovery: ";read a; vagrant snapshot pop $a --no-delete
 
 ps aux | grep postgres | grep -- -D
 sed -i 's!#listen_addresses!listen_addresses!' /var/lib/pgsql/11/data/postgresql.conf
@@ -24,3 +24,5 @@ echo "host all all 192.168.100.0/24 trust" >> /var/lib/pgsql/11/data/pg_hba.conf
 
 vpn использование include vars
 network использование handlers
+
+https://apt.postgresql.org/pub/projects/pgFoundry/pgpool/pgpool-II/pgpool-II3.0.3/pgpool-II-3.0.3.tar.gz

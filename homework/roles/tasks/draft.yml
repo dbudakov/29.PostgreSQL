@@ -1,6 +1,0 @@
-#- name:
-# yum:
-#   name: "{{ item }}"
-#    state: present
-#  loop:
-#    - epel-release

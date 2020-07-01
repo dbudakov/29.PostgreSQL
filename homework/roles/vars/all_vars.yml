@@ -2,3 +2,7 @@ packages:
   - postgresql11-server
   - sshpass
   - pgpool-II-11.x86_64
+
+balancer_pgpool:
+  - pgpool.conf
+  - pool_hba.conf

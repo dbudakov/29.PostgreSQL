@@ -1,6 +1,6 @@
 - name: include vars
   include_vars:
-    file: ../roles/vars/packages.yml
+    file: ../roles/vars/all_vars.yml
 
 - name: Adding users
   user:
@@ -100,7 +100,7 @@
   blockinfile:
     path: /var/lib/pgsql/11/data/pg_hba.conf
     block: |
-      host        all       	postgres	 192.168.100.102/32	trust
+      host        all       	postgres	 192.168.100.0/24	trust
       host        replication	postgres	 192.168.100.102/32	trust
       host        replication	postgres	 192.168.100.103/32 trust
 
@@ -109,3 +109,19 @@
     name: postgresql-11
     enabled: yes
     state: started
+
+- name: Create /usr/lib64/pgsql
+  file:
+    path: /usr/lib64/pgsql
+    state: directory
+    mode: 0755
+
+- name: Copy pgpool-walrecrunning.so
+  template:
+    src: ../../roles/templates/all/pgpool-walrecrunning.so
+    dest: /usr/lib64/pgsql/pgpool-walrecrunning.so
+
+- name: Copy pgpool-walrecrunning.sql
+  template:
+    src: ../../roles/templates/all/pgpool-walrecrunning.sql
+    dest: /usr/share/pgsql/pgpool-walrecrunning.sql

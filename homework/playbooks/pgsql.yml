@@ -11,4 +11,4 @@
   tasks:
     - include: ../roles/tasks/{{ inventory_hostname }}.yml
   handlers:
-    - include: ../roles/handlers/restart.yml
+    - include: ../roles/handlers/all_handlers.yml

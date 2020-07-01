@@ -14,11 +14,11 @@ MACHINES = {
   :'balancer' => {
       :box_name => "centos/7",
       :ip_addr => '192.168.100.103',
-  },
-  :'barmen' => {
-      :box_name => "centos/7",
-      :ip_addr => '192.168.100.104',
   }
+#  :'barmen' => {
+#      :box_name => "centos/7",
+#      :ip_addr => '192.168.100.104',
+#  }
 }
 
 Vagrant.configure("2") do |config|
@@ -35,7 +35,7 @@ Vagrant.configure("2") do |config|
           box.vm.provider :virtualbox do |vb|
           vb.customize ["modifyvm", :id, "--memory", "256"]
           vb.name = boxname.to_s
-          end
+        end
           box.vm.provision "ansible" do |ansible|
 #	        ansible.verbose = "vvv"
             ansible.playbook = "playbooks/pgsql.yml"
