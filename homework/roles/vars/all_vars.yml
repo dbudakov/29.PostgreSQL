@@ -3,6 +3,12 @@ packages:
   - sshpass
   - pgpool-II-11.x86_64
 
+packages_barman:
+  - barman
+  - postgresql11-server
+  - sshpass
+
+
 balancer_pgpool:
   - pgpool.conf
   - pool_hba.conf

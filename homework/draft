@@ -1,5 +1,7 @@
 https://winitpro.ru/index.php/2019/09/26/ustanovka-postgresql-db-centos/
 https://habr.com/ru/post/188096/ - репликация
+https://www.codeflow.site/ru/article/how-to-back-up-restore-and-migrate-postgresql-databases-with-barman-on-centos-7 - barman
+
 
 Создание и откат снапшота
     for i in pg hot-standby balancer; do vagrant up $i;done

@@ -3,6 +3,7 @@
     - pg
     - hot-standby
     - balancer
+    - barman
 
   gather_facts: false
   become: true

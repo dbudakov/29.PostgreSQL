@@ -54,9 +54,9 @@
 
 - name: Create data for standby
   shell: |
-    sshpass -p "postgres" ssh postgres@192.168.100.101 "psql -c \"SELECT pg_start_backup('stream');"\"
-    sshpass -p "postgres" ssh postgres@192.168.100.101 "rsync -a /var/lib/pgsql/11/data/ 192.168.100.102:/var/lib/pgsql/11/data/ --exclude postmaster.pid"
-    sshpass -p "postgres" ssh postgres@192.168.100.101 "psql -c \"SELECT pg_stop_backup();"\"
+    sshpass -p "postgres" ssh postgres@192.168.100.101 "psql -c \"SELECT pg_start_backup('stream');"\";
+    sshpass -p "postgres" ssh postgres@192.168.100.101 "rsync -a /var/lib/pgsql/11/data/ 192.168.100.102:/var/lib/pgsql/11/data/ --exclude postmaster.pid";
+    sshpass -p "postgres" ssh postgres@192.168.100.101 "psql -c \"SELECT pg_stop_backup();"\";
 
 - name: hot_standby on
   replace:
@@ -101,3 +101,22 @@
   template:
     src: ../../roles/templates/all/pgpool-walrecrunning.sql
     dest: /usr/share/pgsql/pgpool-walrecrunning.sql
+
+- name: Configure postgresql.conf for barman
+  shell: |
+    sshpass -p "postgres" ssh postgres@192.168.100.101 echo "archive_mode = on" >> /var/lib/pgsql/11/data/postgresql.conf
+    sshpass -p "postgres" ssh postgres@192.168.100.101 echo "archive_command = 'rsync -a %p barman@192.168.100.104:/%f'" >> /var/lib/pgsql/11/data/postgresql.conf
+
+#- name: Configure postgresql.conf for barman
+#  replace:
+#    path: /var/lib/pgsql/11/data/postgresql.conf
+#    regexp: "#archive_mode = off"
+#    replace: "archive_mode = on"
+#  notify: restarted_pgsql
+
+#- name: Configure postgresql.conf for barman
+#  replace:
+#    path: /var/lib/pgsql/11/data/postgresql.conf
+#    regexp: "#archive_command = ''"
+#    replace: "archive_command = 'rsync -a %p barman@192.168.100.104:/%f'"
+#  notify: restarted_pgsql

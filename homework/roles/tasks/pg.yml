@@ -83,32 +83,29 @@
     path: /var/lib/pgsql/11/data/postgresql.conf
     regexp: "#wal_level = replica"
     replace: "wal_level = hot_standby"
+  notify: restarted_pgsql
 
 - name: Configure postgresql.conf
   replace:
     path: /var/lib/pgsql/11/data/postgresql.conf
     regexp: "#max_wal_senders = 10"
     replace: "max_wal_senders = 2"
+  notify: restarted_pgsql
 
 - name: Configure postgresql.conf
   replace:
     path: /var/lib/pgsql/11/data/postgresql.conf
     regexp: "#wal_keep_segments = 0"
     replace: "wal_keep_segments = 32"
+  notify: restarted_pgsql
 
 - name: set pg_hba.conf
   blockinfile:
     path: /var/lib/pgsql/11/data/pg_hba.conf
     block: |
-      host        all       	postgres	 192.168.100.0/24	trust
+      host        all       	postgres	 192.168.100.0/24	  trust
       host        replication	postgres	 192.168.100.102/32	trust
-      host        replication	postgres	 192.168.100.103/32 trust
 
-- name: Started pgsql
-  systemd:
-    name: postgresql-11
-    enabled: yes
-    state: started
 
 - name: Create /usr/lib64/pgsql
   file:
