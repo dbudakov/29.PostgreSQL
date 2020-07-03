@@ -104,8 +104,11 @@
 
 - name: Configure postgresql.conf for barman
   shell: |
-    sshpass -p "postgres" ssh postgres@192.168.100.101 echo "archive_mode = on" >> /var/lib/pgsql/11/data/postgresql.conf
-    sshpass -p "postgres" ssh postgres@192.168.100.101 echo "archive_command = 'rsync -a %p barman@192.168.100.104:/%f'" >> /var/lib/pgsql/11/data/postgresql.conf
+    sshpass -p "postgres" ssh postgres@192.168.100.101 "cat<<EOF >> /var/lib/pgsql/11/data/postgresql.conf
+    archive_mode = on
+    archive_command = 'rsync -a %p barman@192.168.100.104:/var/lib/barman/pg-db-server/incoming/%f'
+    EOF"
+    sshpass -p "vagrant" ssh root@192.168.100.101 "systemctl restart postgresql-11.service"
 
 #- name: Configure postgresql.conf for barman
 #  replace:

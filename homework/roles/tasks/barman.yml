@@ -64,18 +64,28 @@
     dest: /etc/barman.conf
     mode: 0644
 
-- name:
+- name: Set crontab for "barman backup"
   blockinfile:
     path: /etc/crontab
     block: |
-      30 23 * * * /usr/bin/barman backup pg-db-server
-      * * * * * /usr/bin/barman cron
+      * * * * * barman /usr/bin/barman backup pg-db-server
+      * * * * * barman /usr/bin/barman cron
+
+- name: chmod for .ssh
+  file:
+    path: /home/postgres/.ssh
+    mode: 0700
+
+- name: chmod for .ssh/authorized_keys
+  file:
+    path: /home/postgres/.ssh/authorized_keys
+    mode: 0600
+    owner: postgres
+    group: postgres
 
 - name:
   shell: |
-    chmod 700 /home/postgres/.ssh
-    chown postgres:postgres /home/postgres/.ssh/authorized_keys
-    chmod 600 /home/postgres/.ssh/authorized_keys
     sshpass -p "postgres" scp /home/postgres/.ssh/id_rsa.pub postgres@192.168.100.101:/home/postgres/.ssh/authorized_keys
     sshpass -p "postgres" scp /home/barman/.ssh/id_rsa.pub postgres@192.168.100.101:/home/postgres/.ssh/barman_authorized_keys
     sshpass -p "postgres" ssh postgres@192.168.100.101 'cat /home/postgres/.ssh/barman_authorized_keys >> /home/postgres/.ssh/authorized_keys'
+    barman switch-xlog --force --archive pg-db-server
