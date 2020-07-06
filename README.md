@@ -34,3 +34,6 @@ barman show-backup pg-db-server $(barman list-backup pg-db-server|awk 'NR == 1 {
 
 Список попадающих файлов в резервную копию
 barman list-files pg-db-server $(barman list-backup pg-db-server|awk 'NR == 1 {print $2}')
+
+Дополнительно:  
+[Многоярусный бэкап PostgreSQL с помощью Barman и синхронного переноса журналов транзакций](https://m.habr.com/ru/company/yamoney/blog/333844/)  
