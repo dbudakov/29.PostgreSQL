@@ -35,5 +35,15 @@ barman show-backup pg-db-server $(barman list-backup pg-db-server|awk 'NR == 1 {
 Список попадающих файлов в резервную копию
 barman list-files pg-db-server $(barman list-backup pg-db-server|awk 'NR == 1 {print $2}')
 
+В работе в ansible для копирования `pgpool-walrecrunning.so` используется модуль `"copy"`, потому что `pgpool-walrecrunning`.so бинарный файл   
+   
+```
+- name: Copy pgpool-walrecrunning.so
+  copy:
+    src: ../../roles/templates/all/pgpool-walrecrunning.so
+    dest: /usr/lib64/pgsql/pgpool-walrecrunning.so
+```
+   
 Дополнительно:  
 [Многоярусный бэкап PostgreSQL с помощью Barman и синхронного переноса журналов транзакций](https://m.habr.com/ru/company/yamoney/blog/333844/)  
+https://www.pgpool.net/docs/latest/en/html/example-cluster.html
