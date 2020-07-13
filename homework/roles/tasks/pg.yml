@@ -114,7 +114,7 @@
     mode: 0755
 
 - name: Copy pgpool-walrecrunning.so
-  template:
+  copy:
     src: ../../roles/templates/all/pgpool-walrecrunning.so
     dest: /usr/lib64/pgsql/pgpool-walrecrunning.so
 
