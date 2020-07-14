@@ -58,18 +58,11 @@
     src: ../roles/templates/keys/pg/home/postgres/.ssh/id_rsa.pub
     dest: /home/barman/.ssh/authorized_keys
 
-- name: Copy pg:id_rsa in hot-standby:authorized_keys
+- name: Copy barman.conf
   template:
     src: ../roles/templates/barman/barman.conf
     dest: /etc/barman.conf
     mode: 0644
-
-- name: Set crontab for "barman backup"
-  blockinfile:
-    path: /etc/crontab
-    block: |
-      * * * * * barman /usr/bin/barman backup pg-db-server
-      * * * * * barman /usr/bin/barman cron
 
 - name: chmod for .ssh
   file:
@@ -88,7 +81,12 @@
     sshpass -p "postgres" scp /home/postgres/.ssh/id_rsa.pub postgres@192.168.100.101:/home/postgres/.ssh/authorized_keys
     sshpass -p "postgres" scp /home/barman/.ssh/id_rsa.pub postgres@192.168.100.101:/home/postgres/.ssh/barman_authorized_keys
     sshpass -p "postgres" ssh postgres@192.168.100.101 'cat /home/postgres/.ssh/barman_authorized_keys >> /home/postgres/.ssh/authorized_keys'
-- name:
-  shell: |
-    sleep 15
+    /usr/bin/barman backup pg-db-server || echo 0
     barman switch-xlog --force --archive pg-db-server
+
+- name: Set crontab for "barman backup"
+  blockinfile:
+    path: /etc/crontab
+    block: |
+      * * * * * barman /usr/bin/barman backup pg-db-server
+      * * * * * barman /usr/bin/barman cron
