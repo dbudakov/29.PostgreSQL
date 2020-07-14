@@ -88,5 +88,7 @@
     sshpass -p "postgres" scp /home/postgres/.ssh/id_rsa.pub postgres@192.168.100.101:/home/postgres/.ssh/authorized_keys
     sshpass -p "postgres" scp /home/barman/.ssh/id_rsa.pub postgres@192.168.100.101:/home/postgres/.ssh/barman_authorized_keys
     sshpass -p "postgres" ssh postgres@192.168.100.101 'cat /home/postgres/.ssh/barman_authorized_keys >> /home/postgres/.ssh/authorized_keys'
-    sleep 20
+- name:
+  shell: |
+    sleep 15
     barman switch-xlog --force --archive pg-db-server
