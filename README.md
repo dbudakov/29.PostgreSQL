@@ -43,6 +43,7 @@ barman list-files pg-db-server $(barman list-backup pg-db-server|awk 'NR == 1 {p
     src: ../../roles/templates/all/pgpool-walrecrunning.so
     dest: /usr/lib64/pgsql/pgpool-walrecrunning.so
 ```
+В ansible роли для barman, в последней задаче используется `sleep 20`, для избежания ошибки, происходящей при паралельном запуске бэкапов, так как бэкапы настроены на каждую минуту,по последня команда без намеренной задержки выдает ошибку.  
    
 Дополнительно:  
 [Многоярусный бэкап PostgreSQL с помощью Barman и синхронного переноса журналов транзакций](https://m.habr.com/ru/company/yamoney/blog/333844/)  
