@@ -18,7 +18,12 @@ https://github.com/okbob/pspg
     \q - выход
 
 Создание базы
-    create database otus; - создание
+    CREATE DATABASE db_name; - создание
+    createdb -Upostgres -p 5432 db_name;
+Удаление базы
+    DROP DATABASE db_name;
+    dropdb -U postgres -p 5432 db_name;
+    
     \c otus - подключение
     create table test(id serial, name varchar(100)); - cоздание таблицы c указанием sequence
     \d+ - в описании объектов, мы увидем наши
