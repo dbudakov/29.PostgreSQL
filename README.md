@@ -52,3 +52,28 @@ barman switch-xlog --force --archive pg-db-server
 Дополнительно:  
 [Многоярусный бэкап PostgreSQL с помощью Barman и синхронного переноса журналов транзакций](https://m.habr.com/ru/company/yamoney/blog/333844/)  
 https://www.pgpool.net/docs/latest/en/html/example-cluster.html
+### DEBUG 
+1. ошибка в строке при выводе `barman check [master]`, директории следующих выводов должны совпадать  
+`WAL archive: FAILED (please make sure WAL shipping is setup)`
+```
+barman@backup $ barman show-server pg | grep incoming_wals_directory
+# output1
+# > incoming_wals_directory: /var/lib/barman/pg/incoming
+
+postgres@pg $ cat /etc/postgresql/10/main/postgresql.conf | grep archive_command
+# output2
+# > archive_command = 'rsync -a  %p  barman@staging:/var/lib/barman/pg/incoming/%f'
+```
+
+2. ошибка
+`PostgreSQL: FAILED`
+```
+нет подключения к базе, проверить строчку 'conninfo' в barman.conf и $PGHOME/log/*log, а также pg_hba.conf на мастер сервере
+```
+
+3. формат записи `.pgpass` не поддерживает имена машин нужно писать IP
+```
+ip:port:database:user:password
+192.168.100.111:5432:*:barman:otus
+192.168.100.111:5432:*:streaming_barman:otus
+```
